@@ -65,47 +65,46 @@ export default function reducer(state: State, action: Action): State {
         borrowedLetters: Array.from({ length: numLetters(1) }, () => null),
       };
     case "tick": {
-      switch (state.type) {
-        case "question": {
-          switch (state.kind) {
-            case "question": {
-              if (state.remainingSeconds === 0) {
-                return {
-                  type: "end",
-                  score:
-                    state.score -
-                    getWordScore(state.level, state.borrowedLetters),
-                  remainingSeconds: 0,
-                };
-              } else {
-                return {
-                  ...state,
-                  remainingSeconds: state.remainingSeconds - 1,
-                };
-              }
+      if (state.type === "question") {
+        switch (state.kind) {
+          case "question": {
+            if (state.remainingSeconds === 0) {
+              return {
+                type: "end",
+                score:
+                  state.score -
+                  getWordScore(state.level, state.borrowedLetters),
+                remainingSeconds: 0,
+              };
+            } else {
+              return {
+                ...state,
+                remainingSeconds: state.remainingSeconds - 1,
+              };
             }
-            case "answering": {
-              if (state.remainingQuestionSeconds === 0) {
-                return {
-                  ...state,
-                  kind: "answered",
-                  score:
-                    state.score -
-                    getWordScore(state.level, state.borrowedLetters),
-                };
-              } else {
-                return {
-                  ...state,
-                  remainingQuestionSeconds: state.remainingQuestionSeconds - 1,
-                };
-              }
+          }
+          case "answering": {
+            if (state.remainingQuestionSeconds === 0) {
+              return {
+                ...state,
+                kind: "answered",
+                score:
+                  state.score -
+                  getWordScore(state.level, state.borrowedLetters),
+              };
+            } else {
+              return {
+                ...state,
+                remainingQuestionSeconds: state.remainingQuestionSeconds - 1,
+              };
             }
-            default:
-              return state;
+          }
+          default: {
+            return state;
           }
         }
-        default:
-          return state;
+      } else {
+        return state;
       }
     }
     case "borrow": {

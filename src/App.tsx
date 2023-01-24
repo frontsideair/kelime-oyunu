@@ -27,14 +27,14 @@ function useGameState() {
     return () => window.removeEventListener("keydown", handler);
   }, [dispatch]);
 
-  const timer = useRef<NodeJS.Timer | null>(null);
+  const timer = useRef<number | null>(null);
 
   const start =
     state.type === "start"
       ? () => {
           dispatch({ type: "start" });
 
-          timer.current = setInterval(() => {
+          timer.current = window.setInterval(() => {
             console.log("tick");
             dispatch({ type: "tick" });
           }, 1000);
