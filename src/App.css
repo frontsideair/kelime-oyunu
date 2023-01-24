@@ -36,6 +36,7 @@
   display: flex;
   padding: 2em;
   gap: 4px;
+  justify-content: center;
 }
 
 .read-the-docs {
@@ -74,4 +75,8 @@
 
 .critical {
   color: red;
+}
+
+.rules {
+  text-align: left;
 }
