@@ -1,122 +1,6 @@
-import { useEffect, useReducer, useRef } from "react";
 import "./App.css";
 import Button from "./Button";
-import reducer from "./reducer";
-import {
-  formatTime,
-  getWordScore,
-  isLetter,
-  notNull,
-  numLetters,
-  randomLetterPosition,
-} from "./utils";
-
-function useGameState() {
-  const [state, dispatch] = useReducer(reducer, { type: "start" });
-
-  useEffect(() => {
-    function handler(event: KeyboardEvent) {
-      if (event.key === " ") {
-        dispatch({ type: "answer" });
-      }
-      if (isLetter(event.key)) {
-        dispatch({ type: "fillLetter", letter: event.key.toLocaleUpperCase() });
-      }
-    }
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [dispatch]);
-
-  const timer = useRef<number | null>(null);
-
-  const start =
-    state.type === "start"
-      ? () => {
-          dispatch({ type: "start" });
-
-          timer.current = window.setInterval(() => {
-            console.log("tick");
-            dispatch({ type: "tick" });
-          }, 1000);
-        }
-      : null;
-
-  const borrow =
-    state.type === "question" &&
-    state.kind !== "answered" &&
-    state.borrowedLetters.filter(notNull).length < numLetters(state.level)
-      ? () => {
-          const letterPosition = randomLetterPosition(state.borrowedLetters);
-          dispatch({ type: "borrow", letterPosition });
-        }
-      : null;
-
-  const answer =
-    state.type === "question" && state.kind === "question"
-      ? () => {
-          dispatch({ type: "answer" });
-        }
-      : null;
-
-  const correct =
-    state.type === "question" && state.kind === "answering"
-      ? () => {
-          dispatch({ type: "correct" });
-        }
-      : null;
-
-  const next =
-    state.type === "question" && state.kind === "answered"
-      ? () => {
-          dispatch({ type: "next" });
-        }
-      : null;
-
-  function reset() {
-    if (timer.current) {
-      clearInterval(timer.current);
-    }
-    dispatch({ type: "reset" });
-  }
-
-  const letters = state.type === "question" ? state.borrowedLetters : null;
-
-  const wordScore =
-    state.type === "question" && state.kind !== "answered"
-      ? getWordScore(state.level, state.borrowedLetters)
-      : null;
-
-  const score = state.type !== "start" ? state.score : null;
-
-  const remainingTime =
-    state.type !== "start" ? formatTime(state.remainingSeconds) : null;
-
-  const criticalTime =
-    (state.type !== "start" && state.remainingSeconds < 30) ||
-    (state.type === "question" &&
-      state.kind === "answering" &&
-      state.remainingQuestionSeconds < 10);
-
-  const title =
-    state.type === "start"
-      ? "Welcome"
-      : state.type === "end"
-      ? "Finished"
-      : `Question ${state.level}`;
-
-  return {
-    state: {
-      type: state.type,
-      letters,
-      wordScore,
-      score,
-      remainingTime,
-      criticalTime,
-      title,
-    },
-    actions: { start, borrow, answer, correct, next, reset },
-  };
-}
+import { useGameState } from "./game-state";
 
 function App() {
   const { state, actions } = useGameState();
@@ -142,7 +26,7 @@ function App() {
               {state.letters.map((letter, index) => (
                 <div
                   key={index}
-                  className={notNull(letter) ? "letter borrowed" : "letter"}
+                  className={letter !== null ? "letter borrowed" : "letter"}
                 >
                   {letter}
                 </div>
