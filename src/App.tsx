@@ -18,10 +18,14 @@ function App() {
       </div>
       <div className="card game">
         <h2>{state.title}</h2>
-        <div className="score">{state.score}</div>
+        <div className="score" aria-label="total score">
+          {state.score}
+        </div>
         {state.letters && (
           <>
-            <div className="word-score">{state.wordScore}</div>
+            <div className="word-score" aria-label="word score">
+              {state.wordScore}
+            </div>
             <div className="word">
               {state.letters.map((letter, index) => (
                 <div

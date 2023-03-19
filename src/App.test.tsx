@@ -21,3 +21,27 @@ test("game can be started", async () => {
     /question 1/i
   );
 });
+
+test("word score decreases if a letter is borrowed", async () => {
+  render(<App />);
+
+  await userEvent.click(screen.getByRole("button", { name: /start/i }));
+
+  expect(screen.getByLabelText("word score")).toHaveTextContent(/400/i);
+
+  await userEvent.click(screen.getByRole("button", { name: /borrow/i }));
+
+  expect(screen.getByLabelText("word score")).toHaveTextContent(/300/i);
+});
+
+test("resetting works", async () => {
+  render(<App />);
+
+  await userEvent.click(screen.getByRole("button", { name: /start/i }));
+
+  await userEvent.click(screen.getByRole("button", { name: /reset/i }));
+
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    /kelime oyunu helper/i
+  );
+});
